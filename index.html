@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evaluación de Aptitudes — Prueba Psicotécnica</title>
+</head>
+<body style="margin:0;">
+<div id="app"></div>
+
+<style>
+  :root {
+    --ink: #1A1640;
+    --ink-soft: #2A2470;
+    --paper: #F7F6FB;
+    --paper-card: #FFFFFF;
+    --brand-start: #211E51;
+    --brand-mid: #4146A0;
+    --brand-end: #80287E;
+    --amber: #80287E;
+    --amber-deep: #5E1F60;
+    --teal: #4146A0;
+    --line: #E1DEEF;
+    --muted: #6B6890;
+    --danger: #B3402F;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  #app {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app * { box-sizing: border-box; }
+
+  .screen {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 24px 0;
+  }
+  .brand {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .intro-logo {
+    height: 44px;
+    width: auto;
+    margin-bottom: 28px;
+  }
+
+  /* ---------- Intro screen ---------- */
+  .intro-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 14px;
+  }
+  h1.intro-title {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 600;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .intro-sub {
+    font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 0 36px;
+  }
+
+  .block-list {
+    border-top: 1px solid var(--line);
+    margin-bottom: 36px;
+  }
+  .block-row {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .block-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--amber-deep);
+    width: 24px;
+    flex-shrink: 0;
+  }
+  .block-info { flex: 1; }
+  .block-name { font-weight: 600; font-size: 15px; }
+  .block-desc { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .block-time {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .field-group { margin-bottom: 18px; }
+  .field-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    background: var(--paper-card);
+    color: var(--ink);
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--amber-deep);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, var(--brand-start), var(--brand-mid) 55%, var(--brand-end));
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 28px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .btn-primary:hover { opacity: 0.88; }
+  .btn-primary:disabled { background: #C9C6DA; cursor: not-allowed; opacity: 1; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--line);
+    padding: 13px 24px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: var(--ink-soft); }
+
+  .disclaimer {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+
+  /* ---------- Quiz screen ---------- */
+  .quiz-header {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 10;
+    padding: 18px 0 16px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 28px;
+  }
+  .quiz-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .block-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 4px;
+  }
+  .block-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .timer-box {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .timer-value {
+    font-family: var(--font-mono);
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .timer-value.urgent { color: var(--danger); }
+  .timer-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand-mid), var(--brand-end));
+    transition: width 0.3s ease;
+  }
+  .progress-fill.urgent { background: var(--danger); }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .question-card {
+    background: var(--paper-card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .question-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--amber-deep);
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 22px;
+    line-height: 1.45;
+  }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    padding: 14px 16px;
+    border: 1.5px solid var(--line);
+    border-radius: 5px;
+    background: var(--paper-card);
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--ink);
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+  .option-btn:hover { border-color: var(--brand-mid); background: #FAF7FC; }
+  .option-btn.selected {
+    border-color: var(--brand-mid);
+    background: linear-gradient(135deg, var(--brand-start), var(--brand-mid) 60%, var(--brand-end));
+    color: #FFFFFF;
+  }
+  .option-letter {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Likert specific */
+  .likert-scale {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+  }
+  .likert-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 6px;
+    border: 1.5px solid var(--line);
+    border-radius: 5px;
+    background: var(--paper-card);
+    cursor: pointer;
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+  .likert-btn:hover { border-color: var(--brand-mid); }
+  .likert-btn.selected { border-color: var(--brand-end); background: linear-gradient(135deg, var(--brand-start), var(--brand-end)); color: white; }
+  .likert-num { font-family: var(--font-mono); font-weight: 700; font-size: 16px; }
+  .likert-text { font-size: 10px; text-align: center; line-height: 1.2; color: var(--muted); }
+  .likert-btn.selected .likert-text { color: rgba(255,255,255,0.85); }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+  }
+
+  .block-divider {
+    text-align: center;
+    padding: 60px 0;
+  }
+  .block-divider-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber-deep);
+    margin-bottom: 16px;
+  }
+  .block-divider-title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .block-divider-desc {
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+  .block-divider-time {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 32px;
+  }
+
+  /* ---------- Done screen ---------- */
+  .done-screen {
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .done-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-start), var(--brand-mid), var(--brand-end));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    font-size: 26px;
+  }
+  .done-title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .done-sub {
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto;
+    font-size: 15px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    h1.intro-title { font-size: 30px; }
+    .detail-grid { grid-template-columns: repeat(2, 1fr); }
+    .likert-scale { flex-wrap: wrap; }
+  }
+</style>
+
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script>
+(function(){
+
+// ============================================================
+// DATA
+// ============================================================
+const BLOCKS = [
+  {
+    id: 'verbal', name: 'Razonamiento Verbal', tag: 'Bloque 1',
+    desc: 'Sinónimos, antónimos y analogías', timeSec: 360, type: 'mcq',
+    questions: [
+      { q: "Elige el SINÓNIMO de la palabra 'EFICAZ':", opts: ['Lento','Eficiente','Costoso','Confuso'], a: 1 },
+      { q: "Elige el ANTÓNIMO de la palabra 'ESCASO':", opts: ['Limitado','Abundante','Pequeño','Raro'], a: 1 },
+      { q: "Completa la analogía: Médico es a Hospital como Profesor es a:", opts: ['Libro','Escuela','Examen','Tablero'], a: 1 },
+      { q: "Elige el SINÓNIMO de la palabra 'PERSEVERANTE':", opts: ['Indeciso','Tenaz','Distraído','Impulsivo'], a: 1 },
+      { q: "Elige la opción que NO pertenece al grupo:", opts: ['Manzana','Pera','Zanahoria','Naranja'], a: 2 },
+      { q: "Completa la analogía: Llave es a Puerta como Contraseña es a:", opts: ['Computador','Acceso','Internet','Pantalla'], a: 1 },
+      { q: "Elige el ANTÓNIMO de la palabra 'TRANSPARENTE':", opts: ['Claro','Opaco','Visible','Brillante'], a: 1 },
+      { q: "\"Aunque el proyecto se retrasó, el equipo cumplió con la calidad esperada.\" ¿Cuál idea es correcta?", opts: ['El proyecto fue de baja calidad','El equipo no cumplió','Hubo retraso pero buena calidad','No hubo retraso'], a: 2 },
+      { q: "Elige el SINÓNIMO de la palabra 'AMBIGUO':", opts: ['Claro','Confuso','Directo','Sencillo'], a: 1 },
+      { q: "Completa la analogía: Semilla es a Árbol como Idea es a:", opts: ['Papel','Proyecto','Reunión','Computador'], a: 1 },
+    ]
+  },
+  {
+    id: 'numerico', name: 'Razonamiento Numérico', tag: 'Bloque 2',
+    desc: 'Operaciones, porcentajes e interpretación de datos', timeSec: 420, type: 'mcq',
+    questions: [
+      { q: "Si un producto cuesta $80.000 y tiene un descuento del 25%, ¿cuál es el precio final?", opts: ['$60.000','$65.000','$20.000','$70.000'], a: 0 },
+      { q: "¿Cuál es el siguiente número en la serie: 2, 4, 8, 16, __?", opts: ['18','24','32','20'], a: 2 },
+      { q: "Un equipo de 5 personas produce 100 unidades en un día. ¿Cuántas produce 1 persona (mismo ritmo)?", opts: ['15','20','25','30'], a: 1 },
+      { q: "Si el 40% de un grupo de 50 personas son hombres, ¿cuántas mujeres hay?", opts: ['20','25','30','35'], a: 2 },
+      { q: "Un viaje de 180 km se hace en 3 horas. ¿Cuál es la velocidad promedio?", opts: ['50 km/h','60 km/h','45 km/h','90 km/h'], a: 1 },
+      { q: "¿Cuál es el siguiente número en la serie: 1, 3, 6, 10, __?", opts: ['13','14','15','16'], a: 2 },
+      { q: "Compras 3 cajas de 12 unidades cada una y vendes 20 unidades. ¿Cuántas unidades te quedan?", opts: ['14','16','18','20'], a: 1 },
+      { q: "Un salario de $2.000.000 sube un 10%. ¿Cuál es el nuevo salario?", opts: ['$2.100.000','$2.200.000','$2.020.000','$2.150.000'], a: 1 },
+      { q: "Si 4 máquinas tardan 6 horas en hacer un trabajo, ¿cuánto tardarían 8 máquinas (mismo ritmo)?", opts: ['2 horas','3 horas','4 horas','12 horas'], a: 1 },
+      { q: "¿Cuál es el siguiente número en la serie: 5, 10, 20, 40, __?", opts: ['45','60','70','80'], a: 3 },
+    ]
+  },
+  {
+    id: 'logico', name: 'Razonamiento Lógico-Abstracto', tag: 'Bloque 3',
+    desc: 'Series, secuencias y patrones', timeSec: 420, type: 'mcq',
+    questions: [
+      { q: "Completa la secuencia de letras: A, C, E, G, __", opts: ['H','I','J','K'], a: 2 },
+      { q: "¿Qué figura sigue la lógica? Círculo, Cuadrado, Círculo, Cuadrado, __", opts: ['Círculo','Triángulo','Cuadrado','Rombo'], a: 2 },
+      { q: "Si TODOS los círculos son azules, y esta figura es un círculo, esta figura es:", opts: ['Roja','Azul','Verde','No se puede saber'], a: 1 },
+      { q: "Completa la secuencia: 2, 6, 18, 54, __", opts: ['108','162','100','216'], a: 1 },
+      { q: "Si 'Lápiz' se relaciona con 'Escribir' como 'Tijera' se relaciona con:", opts: ['Papel','Cortar','Mesa','Cocina'], a: 1 },
+      { q: "¿Cuál palabra no pertenece al grupo? Martillo, Destornillador, Llave, Pintura", opts: ['Martillo','Destornillador','Llave','Pintura'], a: 3 },
+      { q: "Completa la secuencia: Z, X, V, T, __", opts: ['S','R','Q','U'], a: 1 },
+      { q: "Si ningún gato es perro, y Firulais es un perro, entonces Firulais:", opts: ['Es un gato','No es un gato','Es ambos','No se puede saber'], a: 1 },
+      { q: "Completa la secuencia: 1, 4, 9, 16, __", opts: ['20','24','25','30'], a: 2 },
+      { q: "¿Qué figura completa el patrón? Triángulo, Triángulo, Cuadrado, Triángulo, Triángulo, __", opts: ['Triángulo','Cuadrado','Círculo','Rombo'], a: 1 },
+    ]
+  },
+  {
+    id: 'atencion', name: 'Atención y Precisión', tag: 'Bloque 4',
+    desc: 'Comparación e identificación rápida de datos', timeSec: 300, type: 'mcq',
+    questions: [
+      { q: "¿Cuál par es IDÉNTICO?\nA) 482917 / 482917\nB) 482917 / 482971", opts: ['El primer par (A)','El segundo par (B)'], a: 0 },
+      { q: "¿Cuál par es IDÉNTICO?\nA) Gestión Comercial / Gestion Comercial\nB) Gestión Comercial / Gestión Comercial", opts: ['El primer par (A)','El segundo par (B)'], a: 1 },
+      { q: "¿Cuántas veces aparece la letra 'A' en la palabra 'ADMINISTRACIÓN'?", opts: ['2','3','4','5'], a: 2 },
+      { q: "¿Cuál par es IDÉNTICO?\nA) 55-102-A / 55-102-A\nB) 55-102-A / 55-201-A", opts: ['El primer par (A)','El segundo par (B)'], a: 0 },
+      { q: "¿Cuántas veces aparece el número '7' en esta serie: 7297137479?", opts: ['3','4','5','6'], a: 0 },
+      { q: "¿Cuál par es IDÉNTICO?\nA) Bogotá D.C. / Bogota D.C.\nB) Bogotá D.C. / Bogotá D.C.", opts: ['El primer par (A)','El segundo par (B)'], a: 1 },
+      { q: "¿Cuántas letras 'E' tiene la palabra 'EFICIENTE'?", opts: ['2','3','4','5'], a: 0 },
+      { q: "¿Cuál par es IDÉNTICO?\nA) 91823-XY / 91823-XY\nB) 91823-XY / 91832-XY", opts: ['El primer par (A)','El segundo par (B)'], a: 0 },
+      { q: "¿Cuántas veces aparece la letra 'S' en 'RESPONSABILIDAD'?", opts: ['1','2','3','4'], a: 1 },
+      { q: "¿Cuál par es IDÉNTICO?\nA) ventas@empresa.co / ventas@empresa.co\nB) ventas@empresa.co / ventas@empreza.co", opts: ['El primer par (A)','El segundo par (B)'], a: 0 },
+    ]
+  },
+  {
+    id: 'estilo', name: 'Estilo de Trabajo', tag: 'Bloque 5',
+    desc: 'Autopercepción: tareas, equipo y manejo del estrés. No hay respuestas correctas.', timeSec: 300, type: 'likert',
+    questions: [
+      { q: "Prefiero seguir un plan estructurado antes que improvisar sobre la marcha.", cat: 'tareas' },
+      { q: "Me resulta fácil concentrarme en una sola tarea hasta terminarla.", cat: 'tareas' },
+      { q: "Suelo revisar mi trabajo más de una vez antes de entregarlo.", cat: 'tareas' },
+      { q: "Disfruto colaborar con otras personas para lograr un objetivo común.", cat: 'personas' },
+      { q: "Me resulta sencillo escuchar puntos de vista distintos al mío sin molestarme.", cat: 'personas' },
+      { q: "Prefiero comunicar abiertamente un desacuerdo en lugar de evitarlo.", cat: 'personas' },
+      { q: "Mantengo la calma cuando tengo varias tareas urgentes al mismo tiempo.", cat: 'estres' },
+      { q: "Los cambios de último momento no afectan significativamente mi desempeño.", cat: 'estres' },
+      { q: "Cuando algo no sale como esperaba, busco soluciones en lugar de frustrarme.", cat: 'estres' },
+      { q: "Me siento cómodo/a recibiendo retroalimentación crítica sobre mi trabajo.", cat: 'estres' },
+    ]
+  }
+];
+
+const LOGO_SRC = 'data:image/png;base64,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';
+const LIKERT_LABELS = ['Muy en desacuerdo','En desacuerdo','Neutral','De acuerdo','Muy de acuerdo'];
+
+// PEGA AQUÍ TU ENDPOINT DE FORMSPREE (ver instrucciones de configuración)
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/TU_ID_AQUI';
+
+function levelFromScore(score) {
+  if (score >= 10) return 'Sobresaliente';
+  if (score >= 8) return 'Alto';
+  if (score >= 5) return 'Medio';
+  return 'Bajo';
+}
+function levelClass(level) {
+  return 'level-' + level.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+// ============================================================
+// REACT APP
+// ============================================================
+const { useState, useEffect, useRef, useCallback } = React;
+
+function useTimer(initialSec, onExpire, active) {
+  const [remaining, setRemaining] = useState(initialSec);
+  const onExpireRef = useRef(onExpire);
+  onExpireRef.current = onExpire;
+
+  useEffect(() => {
+    setRemaining(initialSec);
+  }, [initialSec]);
+
+  useEffect(() => {
+    if (!active) return;
+    if (remaining <= 0) {
+      onExpireRef.current();
+      return;
+    }
+    const t = setTimeout(() => setRemaining(r => r - 1), 1000);
+    return () => clearTimeout(t);
+  }, [remaining, active]);
+
+  return remaining;
+}
+
+function App() {
+  const [view, setView] = useState('intro'); // intro | quiz | divider | done
+  const [candidate, setCandidate] = useState({ name: '', position: '' });
+  const [blockIdx, setBlockIdx] = useState(0);
+  const [qIdx, setQIdx] = useState(0);
+  const [answers, setAnswers] = useState({}); // {blockId: [answers]}
+  const [submitStatus, setSubmitStatus] = useState(null); // null | 'ok' | 'error'
+  const startTimeRef = useRef(null);
+
+  const block = BLOCKS[blockIdx];
+
+  const goToNextQuestion = useCallback(() => {
+    setQIdx(prev => {
+      const curBlock = BLOCKS[blockIdx];
+      if (prev + 1 < curBlock.questions.length) {
+        return prev + 1;
+      }
+      return prev;
+    });
+  }, [blockIdx]);
+
+  const handleBlockExpire = useCallback(() => {
+    finishBlock();
+  }, [blockIdx, answers]);
+
+  function finishBlock() {
+    if (blockIdx + 1 < BLOCKS.length) {
+      setBlockIdx(b => b + 1);
+      setQIdx(0);
+      setView('divider');
+    } else {
+      submitResults();
+    }
+  }
+
+  function selectAnswer(value) {
+    setAnswers(prev => {
+      const arr = (prev[block.id] || []).slice();
+      arr[qIdx] = value;
+      return { ...prev, [block.id]: arr };
+    });
+  }
+
+  function nextQuestion() {
+    if (qIdx + 1 < block.questions.length) {
+      setQIdx(qIdx + 1);
+    } else {
+      finishBlock();
+    }
+  }
+  function prevQuestion() {
+    if (qIdx > 0) setQIdx(qIdx - 1);
+  }
+
+  function startBlock() {
+    setView('quiz');
+  }
+
+  function startTest() {
+    startTimeRef.current = Date.now();
+    setView('quiz');
+  }
+
+  async function submitResults() {
+    const scoreBlocks = {};
+    let total = 0;
+    BLOCKS.forEach(b => {
+      if (b.type === 'mcq') {
+        const userAns = answers[b.id] || [];
+        let correct = 0;
+        b.questions.forEach((q, i) => { if (userAns[i] === q.a) correct++; });
+        scoreBlocks[b.id] = correct;
+        total += correct;
+      } else if (b.type === 'likert') {
+        const userAns = answers[b.id] || [];
+        const cats = { tareas: [], personas: [], estres: [] };
+        b.questions.forEach((q, i) => {
+          const v = userAns[i];
+          if (typeof v === 'number') cats[q.cat].push(v);
+        });
+        const avg = arr => arr.length ? (arr.reduce((a,c)=>a+c,0)/arr.length) : null;
+        scoreBlocks.estilo_tareas = avg(cats.tareas);
+        scoreBlocks.estilo_personas = avg(cats.personas);
+        scoreBlocks.estilo_estres = avg(cats.estres);
+      }
+    });
+
+    const level = levelFromScore(total / 4);
+    const summaryLines = [
+      'NUEVO RESULTADO DE PRUEBA PSICOTÉCNICA',
+      '',
+      'Candidato: ' + (candidate.name || 'Sin nombre'),
+      'Cargo: ' + (candidate.position || 'No especificado'),
+      'Fecha: ' + new Date().toLocaleString('es-CO'),
+      '',
+      '--- Puntajes cognitivos (sobre 10 cada uno) ---',
+      'Verbal: ' + (scoreBlocks.verbal ?? '-'),
+      'Numérico: ' + (scoreBlocks.numerico ?? '-'),
+      'Lógico-Abstracto: ' + (scoreBlocks.logico ?? '-'),
+      'Atención y Precisión: ' + (scoreBlocks.atencion ?? '-'),
+      'TOTAL: ' + total + ' / 40',
+      'Perfil general: ' + level,
+      '',
+      '--- Estilo de trabajo (escala 1-5) ---',
+      'Orientación a tareas: ' + (scoreBlocks.estilo_tareas != null ? scoreBlocks.estilo_tareas.toFixed(1) : '-'),
+      'Orientación a personas: ' + (scoreBlocks.estilo_personas != null ? scoreBlocks.estilo_personas.toFixed(1) : '-'),
+      'Manejo del estrés: ' + (scoreBlocks.estilo_estres != null ? scoreBlocks.estilo_estres.toFixed(1) : '-'),
+    ].join('\n');
+
+    try {
+      await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: 'Resultado prueba psicotécnica: ' + (candidate.name || 'Sin nombre'),
+          nombre: candidate.name || 'Sin nombre',
+          cargo: candidate.position || 'No especificado',
+          fecha: new Date().toLocaleString('es-CO'),
+          puntaje_verbal: scoreBlocks.verbal ?? '',
+          puntaje_numerico: scoreBlocks.numerico ?? '',
+          puntaje_logico: scoreBlocks.logico ?? '',
+          puntaje_atencion: scoreBlocks.atencion ?? '',
+          total_cognitivo: total + ' / 40',
+          perfil_general: level,
+          estilo_tareas: scoreBlocks.estilo_tareas != null ? scoreBlocks.estilo_tareas.toFixed(1) : '',
+          estilo_personas: scoreBlocks.estilo_personas != null ? scoreBlocks.estilo_personas.toFixed(1) : '',
+          estilo_estres: scoreBlocks.estilo_estres != null ? scoreBlocks.estilo_estres.toFixed(1) : '',
+          resumen: summaryLines
+        })
+      });
+      setSubmitStatus('ok');
+    } catch (e) {
+      console.error('Error enviando resultado', e);
+      setSubmitStatus('error');
+    }
+
+    setView('done');
+  }
+
+  function backToIntro() {
+    setView('intro');
+    setBlockIdx(0); setQIdx(0); setAnswers({});
+    setCandidate({ name: '', position: '' });
+    setSubmitStatus(null);
+  }
+
+  // ============================================================
+  // RENDER: TOP BAR
+  // ============================================================
+  const topBar = React.createElement('div', { className: 'topbar' },
+    React.createElement('div', { className: 'brand-group', onClick: backToIntro, style: {cursor:'pointer', display:'flex', alignItems:'center', gap:'10px'} },
+      React.createElement('img', { src: LOGO_SRC, alt: 'RueData AI', style: { height: '22px', width: 'auto' } }),
+      React.createElement('span', { className: 'brand' }, '· Evaluación de Aptitudes')
+    )
+  );
+
+  // ============================================================
+  // RENDER: INTRO
+  // ============================================================
+  function renderIntro() {
+    const ready = candidate.name.trim().length > 1;
+    return React.createElement('div', { className: 'screen' },
+      React.createElement('img', { src: LOGO_SRC, alt: 'RueData AI', className: 'intro-logo' }),
+      React.createElement('div', { className: 'intro-eyebrow' }, 'Prueba psicotécnica general'),
+      React.createElement('h1', { className: 'intro-title' }, 'Evaluación de habilidades básicas para cualquier cargo'),
+      React.createElement('p', { className: 'intro-sub' },
+        'Esta prueba mide razonamiento verbal, numérico, lógico, atención y estilo de trabajo. Tiene tiempo límite por bloque — cuando el tiempo de un bloque se agota, avanzas automáticamente al siguiente.'),
+      React.createElement('div', { className: 'block-list' },
+        BLOCKS.map((b, i) => React.createElement('div', { className: 'block-row', key: b.id },
+          React.createElement('div', { className: 'block-num' }, String(i+1).padStart(2,'0')),
+          React.createElement('div', { className: 'block-info' },
+            React.createElement('div', { className: 'block-name' }, b.name),
+            React.createElement('div', { className: 'block-desc' }, b.desc)
+          ),
+          React.createElement('div', { className: 'block-time' }, fmtTime(b.timeSec))
+        ))
+      ),
+      React.createElement('div', { className: 'field-group' },
+        React.createElement('label', { className: 'field-label' }, 'Nombre completo'),
+        React.createElement('input', {
+          className: 'field-input', type: 'text', value: candidate.name,
+          onChange: e => setCandidate(c => ({...c, name: e.target.value})),
+          placeholder: 'Ej. María Fernanda Gómez'
+        })
+      ),
+      React.createElement('div', { className: 'field-group' },
+        React.createElement('label', { className: 'field-label' }, 'Cargo al que aplicas'),
+        React.createElement('input', {
+          className: 'field-input', type: 'text', value: candidate.position,
+          onChange: e => setCandidate(c => ({...c, position: e.target.value})),
+          placeholder: 'Ej. Analista de Operaciones'
+        })
+      ),
+      React.createElement('button', {
+        className: 'btn-primary', disabled: !ready, onClick: startTest
+      }, 'Comenzar prueba →'),
+      React.createElement('p', { className: 'disclaimer' },
+        'Tus respuestas se enviarán automáticamente al equipo de selección al finalizar. No verás tu puntaje detallado en pantalla.')
+    );
+  }
+
+  // ============================================================
+  // RENDER: BLOCK DIVIDER
+  // ============================================================
+  function renderDivider() {
+    const b = BLOCKS[blockIdx];
+    return React.createElement('div', { className: 'screen' },
+      React.createElement('div', { className: 'block-divider' },
+        React.createElement('div', { className: 'block-divider-eyebrow' }, b.tag),
+        React.createElement('div', { className: 'block-divider-title' }, b.name),
+        React.createElement('div', { className: 'block-divider-desc' }, b.desc),
+        React.createElement('div', { className: 'block-divider-time' }, 'Tiempo asignado: ' + fmtTime(b.timeSec) + ' · ' + b.questions.length + ' preguntas'),
+        React.createElement('button', { className: 'btn-primary', onClick: startBlock }, 'Iniciar bloque →')
+      )
+    );
+  }
+
+  // ============================================================
+  // RENDER: QUIZ
+  // ============================================================
+  function renderQuiz() {
+    const b = block;
+    const q = b.questions[qIdx];
+    const userAns = (answers[b.id] || [])[qIdx];
+    const hasAnswer = userAns !== undefined;
+
+    return React.createElement(QuizBody, {
+      key: b.id,
+      block: b,
+      qIdx, q, userAns, hasAnswer,
+      onExpire: handleBlockExpire,
+      onSelect: selectAnswer,
+      onNext: nextQuestion,
+      onPrev: prevQuestion,
+    });
+  }
+
+  // ============================================================
+  // RENDER: DONE
+  // ============================================================
+  function renderDone() {
+    const firstName = candidate.name.split(' ')[0] || '';
+    return React.createElement('div', { className: 'screen' },
+      React.createElement('div', { className: 'done-screen' },
+        React.createElement('div', { className: 'done-icon' }, '✓'),
+        React.createElement('div', { className: 'done-title' }, 'Prueba completada'),
+        React.createElement('p', { className: 'done-sub' },
+          'Gracias, ' + firstName + '. Tus respuestas fueron registradas. El equipo de selección revisará tus resultados como parte del proceso.'),
+        submitStatus === 'error' && React.createElement('p', { style: { color: 'var(--danger)', fontSize: '13px', marginTop: '16px' } },
+          'Hubo un problema técnico al enviar tus respuestas. Por favor avisa al equipo de selección.')
+      )
+    );
+  }
+
+  let body;
+  if (view === 'intro') body = renderIntro();
+  else if (view === 'divider') body = renderDivider();
+  else if (view === 'quiz') body = renderQuiz();
+  else if (view === 'done') body = renderDone();
+
+  return React.createElement(React.Fragment, null, topBar, body);
+}
+
+// ============================================================
+// QUIZ BODY (isolated component so timer resets cleanly per block)
+// ============================================================
+function QuizBody({ block, qIdx, q, userAns, hasAnswer, onExpire, onSelect, onNext, onPrev }) {
+  const remaining = useTimer(block.timeSec, onExpire, true);
+  const pct = (remaining / block.timeSec) * 100;
+  const urgent = remaining <= 20;
+  const progressPct = ((qIdx + 1) / block.questions.length) * 100;
+
+  return React.createElement('div', { className: 'screen' },
+    React.createElement('div', { className: 'quiz-header' },
+      React.createElement('div', { className: 'quiz-header-top' },
+        React.createElement('div', null,
+          React.createElement('div', { className: 'block-tag' }, block.tag),
+          React.createElement('div', { className: 'block-title' }, block.name)
+        ),
+        React.createElement('div', { className: 'timer-box' },
+          React.createElement('div', { className: 'timer-value' + (urgent ? ' urgent' : '') }, fmtTime(remaining)),
+          React.createElement('div', { className: 'timer-label' }, 'tiempo restante')
+        )
+      ),
+      React.createElement('div', { className: 'progress-track' },
+        React.createElement('div', { className: 'progress-fill' + (urgent ? ' urgent' : ''), style: { width: progressPct + '%' } })
+      ),
+      React.createElement('div', { className: 'progress-meta' },
+        React.createElement('span', null, 'Pregunta ' + (qIdx + 1) + ' de ' + block.questions.length),
+        React.createElement('span', null, Math.round(pct) + '% del tiempo del bloque')
+      )
+    ),
+    React.createElement('div', { className: 'question-card' },
+      React.createElement('div', { className: 'question-num' }, 'Pregunta ' + (qIdx + 1)),
+      React.createElement('div', { className: 'question-text' },
+        q.q.split('\n').map((line, i) => React.createElement('div', { key: i }, line))),
+      block.type === 'mcq'
+        ? React.createElement('div', { className: 'options-list' },
+            q.opts.map((opt, i) => React.createElement('button', {
+              key: i,
+              className: 'option-btn' + (userAns === i ? ' selected' : ''),
+              onClick: () => onSelect(i)
+            },
+              React.createElement('span', { className: 'option-letter' }, String.fromCharCode(65 + i)),
+              React.createElement('span', null, opt)
+            ))
+          )
+        : React.createElement('div', { className: 'likert-scale' },
+            [1,2,3,4,5].map(v => React.createElement('button', {
+              key: v,
+              className: 'likert-btn' + (userAns === v ? ' selected' : ''),
+              onClick: () => onSelect(v)
+            },
+              React.createElement('span', { className: 'likert-num' }, v),
+              React.createElement('span', { className: 'likert-text' }, LIKERT_LABELS[v-1])
+            ))
+          )
+    ),
+    React.createElement('div', { className: 'nav-row' },
+      React.createElement('button', { className: 'btn-ghost', onClick: onPrev, disabled: qIdx === 0, style: qIdx === 0 ? {opacity:0.4, cursor:'not-allowed'} : {} }, '← Anterior'),
+      React.createElement('button', { className: 'btn-primary', onClick: onNext, disabled: !hasAnswer },
+        qIdx + 1 < block.questions.length ? 'Siguiente →' : 'Finalizar bloque →')
+    )
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('app'));
+root.render(React.createElement(App));
+
+})();
+</script>
+</body>
+</html>
